@@ -16,7 +16,7 @@ The core objective of ResuTrack is to transition from basic string processing (t
 
 ---
 
-## 🗄️ Database Architecture Schema (`submissions/models.py`)
+## 🗄️ Database Architecture Schema 
 
 The application maps its persistence criteria inside a single, dedicated data model class named `ApplicantSubmission` using the following column fields:
 
