@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResuTracker</title>
+</head>
+<body>
+    <h1>Welcome to ResuTracker!</h1>
+    <p>Where you can find the best spot of GROWING your CONNECTION</p>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <label>Full Name:</label><br>
+        <input type="text" name="input_name" placeholder="Enter name" required><br><br>
+        
+        <label>Email Address:</label><br>
+        <input type="email" name="input_email" placeholder="Enter email" required><br><br>
+        
+        <label>Upload Resume (PDF):</label><br>
+        <input type="file" name="input_resume" required><br><br>
+        
+        <label>Upload Transcript (PDF):</label><br>
+        <input type="file" name="input_transcript" required><br><br>
+        
+        <button type="submit">Submit Application</button>
+    </form>
+</body>
+</html>
