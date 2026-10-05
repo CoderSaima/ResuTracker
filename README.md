@@ -1,43 +1,42 @@
-# 📁 ResuTrack: Automated Multi-File Media System
+# ResuTrack (Phase 1 & 2 File Ingestion Pipeline)
 
-An independent, intermediate-level Django backend utility designed to handle binary multimedia file streams (`FILE` multi-part requests) instead of standard text inputs. This standalone application mimics a corporate human resource ingestion portal, allowing job applicants to upload their **Resume** and **Academic Transcript** simultaneously. The system manages automated physical disk writing, isolates media assets into secure directories, and records relational pointer paths.
+A robust, enterprise-focused document ingestion system engineered to safely capture, screen, and log applicant payload files via a multi-part web user interface. The system implements a defensive architecture that strictly limits inputs to authentic `.pdf` documents, checking incoming files at both the user-interface entry point and the core database validation level before any binary stream is committed to the server disk.
 
----
+## 🚀 Architectural Phase Breakdown
 
-## 🎯 Architectural Purpose & Scope
+### 🟩 Phase 1: Multi-Part Binary Ingestion
+The initial phase established a functioning data streaming pipe capable of capturing physical user documents alongside relative form parameters.
+* **Multi-Part Protocols:** Configured the HTML interface with `enctype="multipart/form-data"` boundaries to break binary chunks apart for network streaming.
+* **In-Memory Buffer Extraction:** Leveraged Django’s global `request.FILES` dictionary to seamlessly fetch file streams out of transition memory arrays.
+* **Disk Path Relocation:** Used Django's `FileField(upload_to=...)` parameters to save payloads into organized directory structures while storing URL pointer paths in database rows.
 
-The core objective of ResuTrack is to transition from basic string processing (text data fields) into **Binary Media Stream Ingestion**. This application serves as a direct engineering foundation for file-vault management systems, mapping out how files cross the HTTP web layer and settle into physical server storage hardware.
+### 🟨 Phase 2 (Current): Structural File-Extension Validation Gate
+The architecture was hardened to protect the host machine against arbitrary file uploads (such as executable malware scripts `.exe` or un-sanitized web shells `.php`).
+* **Client-Side Interface Filtering:** Integrated standard HTML5 `accept=".pdf"` attribute hints on file fields to filter out non-compliant document formats inside the native browser window.
+* **Model-Level Constraint Validation:** Developed an isolated string utility validator bound directly to the database model fields. If an adversary attempts to bypass the web interface and inject unauthorized files, the database schema instantly triggers a structural `ValidationError` and drops the write path.
+* **Defensive Exception Catching:** Configured custom try-except catch loops within `views.py` to intercept structural database validation rejections gracefully and output controlled API alert responses to the user.
 
-### ⚙️ Core System Functionality
-1. **Multi-Part File Ingestion:** Processes complex HTML forms utilizing `enctype="multipart/form-data"` protocols to accept text and binary assets simultaneously.
-2. **Automated Disk Storage Serialization:** Intercepts uploaded assets via the hidden `request.FILES` dictionary layer, generates isolated storage directories (`resumes/` and `transcripts/`) on the server disk, and commits the files safely.
-3. **Relational Path Pointer Mapping:** To ensure high performance, the heavy file asset is never injected directly into the SQL database rows. Instead, the local operating system path string URL is recorded inside the database column as a lightweight pointer reference.
-4. **Class-Based Views (CBVs):** Built using high-level, object-oriented Django layout structures (`CreateView` and `ListView`) to replace traditional function loops, complying with modern corporate development paradigms.
+## 🗄️ Relational Database Schema Design (models.py)
 
----
+The data structure relies on a singular, tightly structured candidate application model:
 
-## 🗄️ Database Architecture Schema 
+### ResuModel Table
+* `name` (CharField, max_length=255): Captures the applicant's raw full text string.
+* `email` (EmailField): Standard system validation for applicant electronic mail syntax.
+* `resume` (FileField): Stores the disk pointer path to the resume file, locked behind the custom `validate_pdf_extension` boundary.
+* `transcript` (FileField): Stores the disk pointer path to the academic transcript file, locked behind the custom `validate_pdf_extension` boundary.
+* `uploaded_at` (DateTimeField): Generates an unalterable microsecond time-stamp of the exact ingestion moment via `auto_now_add=True`.
 
-The application maps its persistence criteria inside a single, dedicated data model class named `ApplicantSubmission` using the following column fields:
+## 🛡️ Ingestion Security Matrix
 
-* 👤 `name` (`models.CharField(max_length=100)`) — Captures the legal name of the applicant.
-* 📧 `email` (`models.EmailField()`) — Captures the candidate's verified contact address.
-* 📄 `resume` (`models.FileField(upload_to='resumes/')`) — Handles the binary resume document stream and automatically routes it to the local media directory tree.
-* 🎓 `transcript` (`models.FileField(upload_to='transcripts/')`) — Handles the academic grade record transcript document file stream independently.
-* ⏱️ `uploaded_at` (`models.DateTimeField(auto_now_add=True)`) — Precision system server timestamp tracking when the upload transaction occurred.
+The system validates file extensions across a multi-tier defense layer:
 
----
+| Validation Tier | Enforcement Point | Mechanism | Primary Defensive Purpose |
+| :--- | :--- | :--- | :--- |
+| **Tier 1: UX Hint** | Client Browser Interface | `accept=".pdf"` HTML attribute | Filters out noise and prevents accidental wrong-file selection. |
+| **Tier 2: Model Rule** | Django ORM Core | `os.path.splitext(value.name)` | Hardened backend block that drops execution if the file extension is not pure `.pdf`. |
 
-## 🚀 System Pipeline Advantages
-
-* **FYP Code Foundation:** Establishes the core multi-file ingestion, file parsing, and system persistence models required to safely manage encrypted file uploads inside the **Digital Vault (Final Year Project)**.
-* **Modular Separation:** Enforces strict data separation rules, ensuring distinct types of documents (resumes vs. transcripts) are structured into separate folders on the storage disk.
-* **Enterprise Object Patterns:** Elevates software design literacy by introducing Class-Based View inheritance hooks, shrinking boilerplate code drastically while magnifying baseline security parameters.
-
----
-
-## ⚠️ System Limitations (Phase 1 Baseline)
-
-* **No Extensions Validation:** The baseline system accepts any incoming raw file format (e.g., `.png`, `.jpg`, `.txt`) as long as it passes the file field assignment boundary. *(Extension validation filtering to restrict inputs strictly to `.pdf` formats will be introduced in the Phase 2 update).*
-* **Local Hard Disk Dependency:** Assets are stored natively within the host machine's local disk environment. The project is not integrated with remote distributed cloud storage layers (such as AWS S3 or Azure Blob Storage) in this phase.
-* **Public Ingestion Access:** Lacks an active user profile account management shield or authentication guard layer. Any client hitting the route can execute a file upload submission transaction.
+## 💻 Tech Stack & Engineering Focus
+* **Framework:** Django 5.x / Python 3.x
+* **Storage Interface:** Django Object-Relational Mapping (ORM) & Local System Directories
+* **Core Concepts Practiced:** Binary File Streaming Protocols (`request.FILES`), Form Encoding Rules (`multipart/form-data`), Model-level Field Constraints, Graceful Exception Handling.
