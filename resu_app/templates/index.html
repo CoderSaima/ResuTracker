@@ -18,11 +18,12 @@
         <label>Email Address:</label><br>
         <input type="email" name="input_email" placeholder="Enter email" required><br><br>
         
+        <!-- Added accept=".pdf" as a structural client-side filter hint -->
         <label>Upload Resume (PDF):</label><br>
-        <input type="file" name="input_resume" required><br><br>
+        <input type="file" name="input_resume" accept=".pdf" required><br><br>
         
         <label>Upload Transcript (PDF):</label><br>
-        <input type="file" name="input_transcript" required><br><br>
+        <input type="file" name="input_transcript" accept=".pdf" required><br><br>
         
         <button type="submit">Submit Application</button>
     </form>
